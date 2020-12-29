@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+
+    Deep learning wit Js
+  </title>
+</head>
+
+
+
+  <script type="text/javascript">
+
+    var Input = [];
+    var Hidden = [];
+    var Output = [];
+    var Wh = [];
+    var Wo = [];
+    var input_data = [0, 1, 0, 1];
+    var Xh = [0, 0, 0, 0];
+    var Xo = [0, 0];
+    var alpha = 0.5;
+    var Target = [0, 0];
+    var Err = [];
+
+
+
+
+    function reset() {
+
+      Input = [0, 0, 0, 0];
+      Output = [0, 0, 0, 0];
+      Hidden = [0, 0];
+
+      Wh = [[0.5, 0.5, 0.5, 0.5],
+          [0.5, 0.5, 0.5, 0.5],
+          [0.5, 0.5, 0.5, 0.5],
+          [0.5, 0.5, 0.5, 0.5]];
+
+      Wo = [ [0.5, 0.5, 0.5, 0.5],
+          [0.5, 0.5, 0.5, 0.5]];
+     }
+
+    function sigmoid (x){
+      return 1 / (1+ Math.pow(Math.E, (-1 * x)));
+    }
+
+    for (var i = 0; i < Input.length; i++){
+      Input[i] = d[i];
+    }
+
+    for (var j = 0; j < Hidden.length; j++) {
+      for(var i = 0; i < Input.length; i++) {
+        Xh[j] += Wh[j][i] * input[i];
+      }
+    }
+
+    for (var j = 0; j < Hidden.length; j++){
+     Hidden[j] = sigmoid (Xh[j]);
+    }
+
+    for (var k = 0; k < Output.length; k++) {
+      for (var j = 0; j < Hidden.length; j++) {
+        Xo[k] += Wo[k][j] * Hidden[j];
+
+      }
+    }
+
+    for (var k = 0; k < Output.length; k++){
+      Output[k] = sigmoid(Xo[k]);
+    }
+
+    function propagate(d) {
+      //copie des donnees dans la couche d'entree
+
+      for (var i = 0; i < Input.length; i++) {
+        Input[i] = d[i];
+
+        // propage dans la couche cachee
+        Xh = [0, 0, 0, 0];
+        for(var j = 0; j <Hidden.length; j++){
+          for (var i = 0; i < Input.length; i++){
+            Xh[j] += Wh[j][i] * Input[i];
+          }
+        }
+      }
+
+      // applique la fonction d'activation
+
+      for(var j = 0; j < Hidden.length; j++) {
+        Hidden[j] = sigmoid(Xh[j]);
+      }
+
+        //propage la courbe de sortie
+        Xo = [0, 0];
+        for(var k = 0; k <Output.length; k++) {
+          for (var j = 0; j < Hidden.length; j++) {
+            Xo[k] += Wo[k][j] * Hidden[j];
+          }
+        }
+
+        // applique la fonction d'activation
+        for (var k = 0; k < Output.length; k++) {
+          Output[k] = sigmoid(Xo[k]);
+        }
+
+    }
+
+    function display() {
+      document.getElementById('Out0').innerHTML = Output[0];
+      document.getElementById('Err0').innerHTML = Target[0] - Output[0];
+
+      document.getElementById('Out1').innerHTML = Output [1];
+
+      document.getElementById('Err1').innerHTML = Target[1] - Output[1];
+    }
+
+
+    function learn(){
+
+    for (var k = 0; k < Output.length; k++) {
+      Err[k] = Target[k] - Output[k];
+    }
+
+
+
+    var Wog = [[0, 0, 0, 0], [0, 0, 0, 0]];
+    for (var k = 0; k < Output.length; k ++) {
+      for (var j = 0;  j< Hidden.length; j++) {
+        Wog [k] [j] = - Err [k] * Output[k] * (1 - Output[k]) * Hidden[j];
+      }
+    }
+
+
+
+    var Whg = [[0, 0, 0, 0], [0, 0, 0, 0],
+               [0, 0, 0, 0], [0, 0, 0, 0]];
+
+    for (var j = 0; j < Hidden.length; j++) {
+      for (var i = 0; i < Output.length; i++) {
+        var e = 0;
+        for (var k = 0; k < Output.length; k++)
+          e += Wo [k][j] * Err[k];
+        Whg[j][i] = -e * Hidden [j] * (1 - Hidden[j]) * Input[i];
+      }
+    }
+
+    for (var k = 0; k < Output.length; k++) {
+      for (var j = 0; j < Hidden.length; j++) {
+        Wo[k][j] -= alpha * Wog[k][j];
+      }
+    }
+
+    for (var j = 0; j < Hidden.length; j++) {
+      for (var i = 0; i < Input.length; i++) {
+        Wh[j][i] -= alpha * Whg[j][i];
+      }
+    }
+  }
+
+  function propagate () {
+
+    Input [0] = parseInt(document.getElementById('input0').value);
+
+    Input [1] = parseInt(document.getElementById('input1').value);
+
+    Input [2] = parseInt(document.getElementById('input2').value);
+
+    Input [3] = parseInt(document.getElementById('input3').value);
+
+  }
+
+  function learn () {
+
+    Target [0] = parseInt(document.getElementById('target0').value);
+
+    Target [1] = parseInt(document.getElementById('target1').value);
+
+    Target [2] = parseInt(document.getElementById('target2').value);
+
+    Target [3] = parseInt(document.getElementById('target3').value);
+
+  }
+
+  </script>
+
+<body>
+  <h1>
+    Deep learning fundamentals
+  </h1>
+
+
+    <table>
+      <tr>
+        <td> Output 0 : </td>
+        <td id ="Out0"> 0.0 </td>
+      </tr>
+
+      <tr>
+        <td> Output 1 : </td>
+        <td id = "Out1"> 0.0 </td>
+      </tr>
+    </table>
+
+    <table>
+
+      <tr>
+        <td>
+          <input type = "button" value = "Reset"
+          onclick = "reset();">
+        </td>
+
+        <td>
+          <input type = "button" value = "Propagate"
+          onclick = "propagate(input_data);
+          display();">
+        </td>
+      </tr>
+    </table>
+
+      Input Data:
+    <table border="1">
+      <tr>
+        <td>
+          <input type= "text" id="input0"
+            vale="0" size ="1">
+        </td>
+
+        <td>
+          <input type="text" id="input1"
+          value="0" size="1">
+        </td>
+
+        <td>
+          <input type="text" id="input2"
+          value="0" size="1">
+        </td>
+
+        <td>
+          <input type="text" id="input3"
+          value="0" size="1">
+        </td>
+      </tr>
+     </table>
+
+     Target Data :
+     <table border = "1">
+        <tr>
+          <td>
+            <input type = "text" id="target0"
+            value = "0" size = "1">
+          </td>
+
+          <td>
+            <input type = "text" id="target1"
+            value = "0" size = "1">
+          </td>
+        </tr>
+
+     </table>
+
+     <table>
+        <tr>
+          <td> Output 0 : </td>
+          <td id ="out0"> 0.0 </td>
+          <td> Error 0:  </td>
+          <td id="Err0"> 0.0 </td>
+        </tr>
+
+         <tr>
+          <td> Output 1 : </td>
+          <td id ="out1"> 0.0 </td>
+          <td> Error 1:  </td>
+          <td id="Err1"> 0.0 </td>
+        </tr>
+
+     </table>
+
+     <table>
+        <tr>
+        <td>
+          <input type="button" value="Reset" onclick="reset();">
+        </td>
+
+        <td>
+          <input type= "button" value = "Learn" onclick="learn();">
+        </td>
+
+        <td>
+          <input type = "button" value ="Propagate" onclick="propagate(); display();">
+        </td>
+
+        </tr>
+     </table>
+
+
+</body>
+</html>
